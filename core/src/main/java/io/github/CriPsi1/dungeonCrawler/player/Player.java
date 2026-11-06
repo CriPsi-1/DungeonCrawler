@@ -1,4 +1,5 @@
 package io.github.CriPsi1.dungeonCrawler.player;
+import io.github.CriPsi1.dungeonCrawler.world.GameMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -11,7 +12,7 @@ public class Player {
     private float speed = 120f;
 
     // update player information
-    public void update (float delta)
+    public void update (float delta, GameMap gameMap)
     {
         //controlling
         float directionX = 0f;
@@ -42,29 +43,18 @@ public class Player {
             directionY /= diagonalLength;
         }
 
+        // predict possition
+        float nextX = x + speed * delta * directionX;
+        float nextY = y + speed * delta * directionY;
+
         // update position
-        x += speed * delta * directionX;
-        y += speed * delta * directionY;
-
-        // borderCheck
-        if (x < 0 )
+        if (gameMap.canMoveTo(nextX,y,size))
         {
-            x = 0;
+            x = nextX;
         }
-
-        if (x > Gdx.graphics.getWidth() - size)
+        if (gameMap.canMoveTo(x, nextY, size))
         {
-             x = Gdx.graphics.getWidth() - size;
-        }
-
-        if (y < 0)
-        {
-            y = 0;
-        }
-
-        if (y > Gdx.graphics.getHeight() - size)
-        {
-            y = Gdx.graphics.getHeight() - size;
+            y = nextY;
         }
     }
 
