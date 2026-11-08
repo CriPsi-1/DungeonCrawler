@@ -1,15 +1,17 @@
 package io.github.CriPsi1.dungeonCrawler.player;
+import io.github.CriPsi1.dungeonCrawler.entity.Entity;
 import io.github.CriPsi1.dungeonCrawler.world.GameMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
-public class Player {
-
-    private float x = 200f;
-    private float y = 100f;
-    private float size = 48f;
-    private float speed = 120f;
+public class Player extends Entity {
+private float speed;
+    public Player (float x,float y, float size, float speed)
+    {
+        super(x,y,size);
+        this.speed = speed;
+    }
 
     // update player information
     public void update (float delta, GameMap gameMap)
@@ -56,21 +58,5 @@ public class Player {
         {
             y = nextY;
         }
-    }
-
-    // need to get information
-    public float getX ()
-    {
-        return x;
-    }
-
-    public float getY()
-    {
-        return y;
-    }
-
-    public float getSize()
-    {
-        return size;
     }
 }
