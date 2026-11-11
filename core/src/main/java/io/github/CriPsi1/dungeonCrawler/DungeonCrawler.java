@@ -31,9 +31,9 @@ public class DungeonCrawler extends ApplicationAdapter {
     @Override
     public void create() {
         shapeRenderer = new ShapeRenderer();
-        player = new Player(128f,128f,32f, 120);
+        player = new Player(128f,128f,32f, 120, 20, 6);
         gameMap = new GameMap(matrix, tileSize);
-        enemy = new Enemy(96,48,32);
+        enemy = new Enemy(96,48,32, 12, 6);
         combatManager = new CombatManager();
     }
 
@@ -42,16 +42,6 @@ public class DungeonCrawler extends ApplicationAdapter {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         //take player update speed
         float delta = Gdx.graphics.getDeltaTime();
-        //Create button for switch mode
-        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB))
-        {
-            if (gameState == GameState.EXPLORATION)
-            {
-                gameState = GameState.COMBAT;
-            }
-            else { gameState = GameState.EXPLORATION;}
-            System.out.println("Current gameState: " + gameState);
-        }
 
         // check if the player has in exploration or combat mod
         if (gameState == GameState.EXPLORATION) {player.update(delta, gameMap); }
@@ -62,9 +52,9 @@ public class DungeonCrawler extends ApplicationAdapter {
             System.out.println("Distance to enemy: " + player.distanceTo(enemy));
         }
 
-        if (player.distanceTo(enemy) <= 64f && gameState == GameState.EXPLORATION)
+        if (player.distanceTo(enemy) <= 64f && gameState == GameState.EXPLORATION && enemy.isAlive())
         {
-            System.out.println("Бой начат");
+            System.out.println("The fight is started");
             List<Entity> participants = new ArrayList<>();
             participants.add(player);
             participants.add(enemy);
@@ -72,19 +62,49 @@ public class DungeonCrawler extends ApplicationAdapter {
             gameState = GameState.COMBAT;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && gameState == GameState.COMBAT)
+        // check if combat is started
+        if (gameState == GameState.COMBAT)
         {
-            combatManager.nextTurn();
-            if (combatManager.getCurrentParticipant() == player)
+            // player attack enemy
+            if (Gdx.input.isKeyJustPressed(Input.Keys.F) || combatManager.getCurrentParticipant() == player)
             {
-                System.out.println("Player turn");
+                combatManager.entityAttack(player, enemy);
+                System.out.println("Enemy hp: " + enemy.getCurrentHp());
             }
-            else if (combatManager.getCurrentParticipant() == enemy)
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.R) || combatManager.getCurrentParticipant() == enemy)
             {
-                System.out.println("Enemy turn");
+                combatManager.entityAttack(enemy, player);
+                System.out.println("Player hp: " + player.getCurrentHp());
+            }
+
+            // skip turn
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+            {
+                combatManager.nextTurn();
+
+                if (combatManager.getCurrentParticipant() == player)
+                {
+                    System.out.println("Player turn");
+                }
+                else if (combatManager.getCurrentParticipant() == enemy)
+                {
+                    System.out.println("Enemy turn");
+                }
+            }
+
+            // check if player is alive and swap gamestate to exploration mode
+            if (combatManager.isCombatOver()) {
+                if (player.isAlive())
+                {
+                    gameState = GameState.EXPLORATION;
+                }
+                else
+                {
+                    gameState = GameState.GAME_OVER;
+                }
             }
         }
-
 
         // create the map and tiles
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -107,13 +127,15 @@ public class DungeonCrawler extends ApplicationAdapter {
         }
 
         // player render
+        if (player.isAlive()){
         shapeRenderer.setColor(1f, 0f, 0f, 1f);
-        shapeRenderer.rect(player.getX(), player.getY(), player.getSize(), player.getSize());
+        shapeRenderer.rect(player.getX(), player.getY(), player.getSize(), player.getSize());}
 
 
         // enemy render
+        if (enemy.isAlive()){
         shapeRenderer.setColor(0f,0f,1f,1f);
-        shapeRenderer.rect(enemy.getX(), enemy.getY(), enemy.getSize(), enemy.getSize());
+        shapeRenderer.rect(enemy.getX(), enemy.getY(), enemy.getSize(), enemy.getSize());}
         shapeRenderer.end();
     }
 
