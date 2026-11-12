@@ -7,9 +7,10 @@ import com.badlogic.gdx.Input;
 
 public class Player extends Entity {
 private float speed;
-    public Player (float x,float y, float size, float speed, int maxHp, int maxActionPoints)
+    public Player (float x,float y, float size, float speed, int maxHp, int maxActionPoints, int attackBonus,
+                   int defense, int movementRange)
     {
-        super(x,y,size,maxHp, maxActionPoints);
+        super(x,y,size,maxHp, maxActionPoints,attackBonus, defense, movementRange);
         this.speed = speed;
     }
 

@@ -1,4 +1,6 @@
 package io.github.CriPsi1.dungeonCrawler.entity;
+import sun.swing.StringUIClientPropertyKey;
+
 import static java.lang.Math.sqrt;
 
 public abstract class Entity{
@@ -9,8 +11,13 @@ public abstract class Entity{
     private final int maxHp;
     private final int maxActionPoints;
     private int actionPoints;
+    private int defense;
+    private int attackBonus;
+    private int movementRange;
+    private int remainingMovement;
 
-    protected Entity(float x, float y, float size, int maxHp, int maxActionPoints)
+    protected Entity(float x, float y, float size, int maxHp, int maxActionPoints, int attackBonus, int defense,
+                     int movementRange)
     {
         this.x = x;
         this.y = y;
@@ -19,9 +26,14 @@ public abstract class Entity{
         this.hp = maxHp;
         this.maxActionPoints = maxActionPoints;
         this.actionPoints = maxActionPoints/2;
+        this.attackBonus = attackBonus;
+        this.defense = defense;
+        this.movementRange = movementRange;
+        this.remainingMovement = movementRange;
+
     }
 
-    // get entity position
+    // list of getter function
     public float getX()
     {
         return x;
@@ -37,20 +49,12 @@ public abstract class Entity{
         return size;
     }
 
-    // get entity center position
     public float getCenterX() {
         return x+size/2;
     }
 
     public float getCenterY() {
         return y+size/2;
-    }
-
-    public float distanceTo (Entity other)
-    {
-        float dX = this.getCenterX() - other.getCenterX();
-        float dY = this.getCenterY() - other.getCenterY();
-        return (float)sqrt(dX * dX + dY * dY);
     }
 
     public int getMaxHp()
@@ -63,6 +67,33 @@ public abstract class Entity{
         return hp;
     }
 
+    public int getAttackBonus()
+    {
+        return attackBonus;
+    }
+
+    public int getDefense()
+    {
+        return defense;
+    }
+
+    public int getMovementRange() {
+        return movementRange;
+    }
+
+    public int getRemainingMovement() {
+        return remainingMovement;
+    }
+
+    // function for calculation distance to enemy
+    public float distanceTo (Entity other)
+    {
+        float dX = this.getCenterX() - other.getCenterX();
+        float dY = this.getCenterY() - other.getCenterY();
+        return (float)sqrt(dX * dX + dY * dY);
+    }
+
+    // function for dmg take
     public void takeDmg (int dmg)
     {
         if (dmg <= 0)
@@ -77,6 +108,7 @@ public abstract class Entity{
         }
     }
 
+    // check if entity is alive
     public boolean isAlive ()
     {
         return hp > 0;
@@ -87,6 +119,7 @@ public abstract class Entity{
         return actionPoints;
     }
 
+    // function for recover points
     public int recoverPoints(){
         actionPoints = getCurrentPoints() + maxActionPoints/2;
         if (maxActionPoints < actionPoints)
@@ -105,5 +138,26 @@ public abstract class Entity{
         }
         actionPoints -= cost;
         return true;
+    }
+
+    // function for restore movement
+    public int restoreMovement(){
+        return remainingMovement = movementRange;
+    }
+
+    public boolean tryToSpendMovement(int cells)
+    {
+        if(cells < 0 || getRemainingMovement() < cells)
+        {
+            return false;
+        }
+        remainingMovement -= cells;
+        return true;
+    }
+
+    public void placeAtCell(int row, int column, int tileSize)
+    {
+        this.x = column*tileSize + (tileSize - size)/2;
+        this.y = row*tileSize + (tileSize - size)/2;
     }
 }

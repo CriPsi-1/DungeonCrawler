@@ -3,6 +3,7 @@ package io.github.CriPsi1.dungeonCrawler.world;
 public class GameMap {
     private int tileSize;
     private int[][] tiles;
+
     public GameMap (int[][] tiles, int tileSize)
     {
         this.tiles = tiles;
@@ -46,6 +47,18 @@ public class GameMap {
     public int getColumns()
     {
         return tiles[0].length;
+    }
+
+    public int getColumnAt(float x)
+    {
+        int column = (int)Math.floor(x / tileSize);
+        return column;
+    }
+
+    public int getRowAt(float y)
+    {
+        int row = (int)Math.floor(y / tileSize);
+        return row;
     }
 
     public int getTile(int row, int column)

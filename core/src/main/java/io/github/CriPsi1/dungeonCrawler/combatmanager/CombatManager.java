@@ -1,8 +1,10 @@
 package io.github.CriPsi1.dungeonCrawler.combatmanager;
 
+import io.github.CriPsi1.dungeonCrawler.GameState;
 import io.github.CriPsi1.dungeonCrawler.enemy.Enemy;
 import io.github.CriPsi1.dungeonCrawler.entity.Entity;
 import io.github.CriPsi1.dungeonCrawler.player.Player;
+import io.github.CriPsi1.dungeonCrawler.world.GameMap;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -34,7 +36,10 @@ public class CombatManager {
             currentTurnIndex = 0;
         }
         getCurrentParticipant().recoverPoints();
+        getCurrentParticipant().restoreMovement();
         System.out.println("Current points: " + getCurrentParticipant().getCurrentPoints());
+        System.out.println("Current movement: " + getCurrentParticipant().getRemainingMovement());
+        System.out.println();
     }
 
     // attack function
@@ -50,7 +55,17 @@ public class CombatManager {
             System.out.println("Not enough points");
             return false;
         }
-        target.takeDmg(3);
+        int attack = Dice.roll(20)+attacker.getAttackBonus();
+        if (attack < target.getDefense())
+        {
+            System.out.println("Enemy dodge attack");
+            System.out.println();
+            return true;
+        }
+        int dmg = Dice.roll(6);
+        target.takeDmg(dmg);
+        System.out.println("Target take " + dmg + " damage");
+        System.out.println();
         return true;
     }
 
@@ -76,5 +91,23 @@ public class CombatManager {
             }
         }
         return !hasAliveEnemy || !hasAlivePlayers;
+    }
+
+    // check if cell for movement is occupied
+    public boolean isCellOccupied(int row, int column, Entity movingEntity, GameMap gameMap)
+    {
+        for (int i = 0; i < participants.size(); i++)
+        {
+            if (participants.get(i) == movingEntity || !participants.get(i).isAlive())
+            {
+                continue;
+            }
+            if (gameMap.getColumnAt(participants.get(i).getCenterX()) == column &&
+                gameMap.getRowAt(participants.get(i).getCenterY()) == row)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

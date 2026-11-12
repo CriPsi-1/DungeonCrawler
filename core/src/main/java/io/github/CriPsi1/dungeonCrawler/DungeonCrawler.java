@@ -31,9 +31,9 @@ public class DungeonCrawler extends ApplicationAdapter {
     @Override
     public void create() {
         shapeRenderer = new ShapeRenderer();
-        player = new Player(128f,128f,32f, 120, 20, 6);
+        player = new Player(128f,128f,32f, 120, 20, 6, 3, 12, 6);
         gameMap = new GameMap(matrix, tileSize);
-        enemy = new Enemy(96,48,32, 12, 6);
+        enemy = new Enemy(96,48,32, 12, 6, 3, 12, 6);
         combatManager = new CombatManager();
     }
 
@@ -66,30 +66,28 @@ public class DungeonCrawler extends ApplicationAdapter {
         if (gameState == GameState.COMBAT)
         {
             // player attack enemy
-            if (Gdx.input.isKeyJustPressed(Input.Keys.F) || combatManager.getCurrentParticipant() == player)
+            if (Gdx.input.isKeyJustPressed(Input.Keys.F) && combatManager.getCurrentParticipant() == player)
             {
-                combatManager.entityAttack(player, enemy);
-                System.out.println("Enemy hp: " + enemy.getCurrentHp());
-            }
+                if (combatManager.entityAttack(player, enemy))
+                {System.out.println("Enemy hp: " + enemy.getCurrentHp());}
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.R) || combatManager.getCurrentParticipant() == enemy)
-            {
-                combatManager.entityAttack(enemy, player);
-                System.out.println("Player hp: " + player.getCurrentHp());
             }
 
             // skip turn
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && combatManager.getCurrentParticipant() == player && !combatManager.isCombatOver())
             {
                 combatManager.nextTurn();
+                System.out.println("Enemy turn");
+            }
 
-                if (combatManager.getCurrentParticipant() == player)
+            // start player turn
+            if (combatManager.getCurrentParticipant() == enemy && !combatManager.isCombatOver())
+            {
+                combatManager.entityAttack(enemy, player);
+                if (!combatManager.isCombatOver())
                 {
+                    combatManager.nextTurn();
                     System.out.println("Player turn");
-                }
-                else if (combatManager.getCurrentParticipant() == enemy)
-                {
-                    System.out.println("Enemy turn");
                 }
             }
 
