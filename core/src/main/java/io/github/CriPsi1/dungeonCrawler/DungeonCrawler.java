@@ -44,7 +44,7 @@ public class DungeonCrawler extends ApplicationAdapter {
         float delta = Gdx.graphics.getDeltaTime();
 
         // check if the player has in exploration or combat mod
-        if (gameState == GameState.EXPLORATION) {player.update(delta, gameMap); }
+        if (gameState == GameState.EXPLORATION) {player.explorationUpdate(delta, gameMap); }
 
         // check distance in console
         if (Gdx.input.isKeyJustPressed(Input.Keys.E))
@@ -65,6 +65,7 @@ public class DungeonCrawler extends ApplicationAdapter {
         // check if combat is started
         if (gameState == GameState.COMBAT)
         {
+            player.handleCombatInput(combatManager, gameMap);
             // player attack enemy
             if (Gdx.input.isKeyJustPressed(Input.Keys.F) && combatManager.getCurrentParticipant() == player)
             {

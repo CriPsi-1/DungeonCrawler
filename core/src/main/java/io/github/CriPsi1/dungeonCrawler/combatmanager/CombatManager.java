@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class CombatManager {
     private List<Entity> participants = new ArrayList<>();
     private int currentTurnIndex;
-
     // create list for fight
     public void startCombat(List<Entity> participants)
     {
@@ -109,5 +108,26 @@ public class CombatManager {
             }
         }
         return false;
+    }
+
+    public boolean tryMove (Entity entity, int row, int column, GameMap gameMap)
+    {
+        if (!entity.isAlive() || entity != getCurrentParticipant() || isCombatOver())
+        {
+            return false;
+        }
+        int currentColumn = gameMap.getColumnAt(entity.getCenterX());
+        int currentRow = gameMap.getRowAt(entity.getCenterY());
+
+        if (Math.abs(row - currentRow)+Math.abs(column - currentColumn) != 1 || gameMap.isWall(row, column) || isCellOccupied(row, column, entity, gameMap))
+        {
+            return false;
+        }
+        if (!entity.tryToSpendMovement(1))
+        {
+            return false;
+        }
+        entity.placeAtCell(row, column, gameMap.getTileSize());
+        return true;
     }
 }

@@ -1,4 +1,6 @@
 package io.github.CriPsi1.dungeonCrawler.player;
+import io.github.CriPsi1.dungeonCrawler.GameState;
+import io.github.CriPsi1.dungeonCrawler.combatmanager.CombatManager;
 import io.github.CriPsi1.dungeonCrawler.entity.Entity;
 import io.github.CriPsi1.dungeonCrawler.world.GameMap;
 
@@ -15,7 +17,7 @@ private float speed;
     }
 
     // update player information
-    public void update (float delta, GameMap gameMap)
+    public void explorationUpdate (float delta, GameMap gameMap)
     {
         //controlling
         float directionX = 0f;
@@ -58,6 +60,33 @@ private float speed;
         if (gameMap.canMoveTo(x, nextY, size))
         {
             y = nextY;
+        }
+    }
+
+    public void handleCombatInput(CombatManager combatManager, GameMap gameMap)
+    {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+            int row = gameMap.getRowAt(this.getCenterY());
+            int column = gameMap.getColumnAt(this.getCenterX());
+            combatManager.tryMove(this, row, column+1, gameMap);
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+            int row = gameMap.getRowAt(this.getCenterY());
+            int column = gameMap.getColumnAt(this.getCenterX());
+            combatManager.tryMove(this, row, column-1, gameMap);
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+            int row = gameMap.getRowAt(this.getCenterY());
+            int column = gameMap.getColumnAt(this.getCenterX());
+            combatManager.tryMove(this, row+1, column, gameMap);
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+            int row = gameMap.getRowAt(this.getCenterY());
+            int column = gameMap.getColumnAt(this.getCenterX());
+            combatManager.tryMove(this, row-1, column, gameMap);
         }
     }
 }
